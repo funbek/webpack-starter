@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     context: path.resolve(__dirname, './src'),
@@ -10,8 +11,8 @@ module.exports = {
     },
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, './dist/assets'),
-        publicPath: '/assets', // Need for devServer
+        path: path.resolve(__dirname, './dist'),
+        publicPath: '/dist', // Need for devServer
 
     },
     devServer: {
@@ -27,8 +28,11 @@ module.exports = {
                 }],
             },
             {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader'],
+                test: /\.scss$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader','sass-loader']
+                })
             },
         ]
     },
@@ -38,9 +42,12 @@ module.exports = {
             filename: 'commons.js',
             nimChunks: 2,
         }),
-        new HtmlWebpackPlugin({
-            chunks: ['app', 'commons'],
-            filename: 'index.html'
-        }),
+        // new HtmlWebpackPlugin({
+        //     chunks: ['app', 'commons'],
+        //     filename: 'index.html'
+        // }),
+        new ExtractTextPlugin('styles.css', {
+            allChunks: true
+        })
     ]
 }
